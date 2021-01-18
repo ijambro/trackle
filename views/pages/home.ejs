@@ -12,7 +12,7 @@
 
     <main class="container">
 
-        <form action="#">
+        <form id="allSymptomsForm" action="/symptoms" method="POST">
             <ul class="collapsible">
                 <li>
                     <div class="collapsible-header"><i class="material-icons pink-text text-accent-2">signal_cellular_connected_no_internet_4_bar</i>Pain</div>
@@ -24,7 +24,7 @@
                 
                         <div class="row">
                             <p class="range-field">
-                                <input type="range" id="pain-level" min="0" max="10" class="" />
+                                <input type="range" name="pain-level" min="0" max="10" class="" />
                             </p>
                         </div>
 
@@ -40,7 +40,7 @@
                 
                         <div class="row">
                             <p class="range-field">
-                                <input type="range" id="pain-level" min="0" max="10" class="" />
+                                <input type="range" name="gas-level" min="0" max="10" class="" />
                             </p>
                         </div>
 
@@ -52,26 +52,32 @@
 
                         <div class="row">
                             Did you poop, my dear?
+
+                            <div class="switch">
+                                <label>
+                                    No
+                                    <input type="checkbox" name="pooped">
+                                    <span class="lever"></span>
+                                    Yes!
+                                </label>
+                              </div>
                         </div>
-                
-                        <div class="row">
-                            <p class="range-field">
-                                <input type="range" id="pain-level" min="0" max="10" class="" />
-                            </p>
-                        </div>
+        
 
                     </div>
                 </li>
             </ul>
+
+            <div class="row">
+                <div class="col right">
+                    <button class="btn pink accent-2 waves-effect waves-light" type="submit">
+                        Submit
+                        <i class="material-icons right">send</i>
+                    </button>
+                </div>
+            </div>            
         </form>
 
-        <div class="row">
-            <div class="col right">
-                <button class="btn pink accent-2 waves-effect waves-light" type="submit" name="action">Submit
-                    <i class="material-icons right">send</i>
-                </button>
-            </div>
-        </div>
     </main>
 
     <%- include("../partials/footer"); %>
@@ -85,6 +91,29 @@ document.addEventListener('DOMContentLoaded', function() {
     
     let options = {};
     let instances = M.Collapsible.init(elems, options);
+});
+
+// Change all form submits to make async post instead
+// https://pqina.nl/blog/async-form-posts-with-a-couple-lines-of-vanilla-javascript/
+document.querySelector("form").addEventListener("submit", e => {
+    const form = e.target;
+    console.log("Form submitted!");
+    const formFieldsAsObject = Object.fromEntries(new FormData(form).entries());
+    console.log(formFieldsAsObject);
+
+    // Post data using the Fetch API
+    fetch(form.action, {
+        method: form.method,
+        body: JSON.stringify(formFieldsAsObject),
+        headers: {"Content-Type": "application/json"}
+    });
+    //then
+    M.toast({html: "Successfully recorded!  Great job, you!", classes: "green accent-3"})
+    //catch
+    // M.toast({html: "Connection error. Please try again later.", classes: "pink accent-2"})
+
+    // Prevent the default form submit to stay on this page
+    e.preventDefault();
 });
 
 </script>

@@ -12,6 +12,7 @@ if (port == null || port == "") {
 app.set('view engine', 'ejs');
 app.use(express.static(__dirname + '/public'));
 app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
 
 // "Middleware" to log every request
 app.use(function(req, res, next) {
