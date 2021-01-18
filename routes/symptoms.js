@@ -16,6 +16,16 @@ router.post("/", (req, res) => {
     let gas = req.body["gas-level"];
     writeEvent(GAS, gas);
     
+    let pooped = req.body["pooped"];
+    if (pooped) {
+        console.log("Yay for a poop!");
+    }
+
+    let urgent = req.body["urgent"];
+    if (urgent) {
+        console.log("I'm sorry it was urgent");
+    }
+
     res.sendStatus(200);
 });
 

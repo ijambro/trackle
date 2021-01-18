@@ -24,7 +24,7 @@
                 
                         <div class="row">
                             <p class="range-field">
-                                <input type="range" name="pain-level" min="0" max="10" class="" />
+                                <input type="range" name="pain-level" min="0" max="10" />
                             </p>
                         </div>
 
@@ -40,7 +40,7 @@
                 
                         <div class="row">
                             <p class="range-field">
-                                <input type="range" name="gas-level" min="0" max="10" class="" />
+                                <input type="range" name="gas-level" min="0" max="2" />
                             </p>
                         </div>
 
@@ -62,7 +62,49 @@
                                 </label>
                               </div>
                         </div>
-        
+                        <div class="row">
+                            Consistency
+                            <div class="input-field col s12">
+                                <select>
+                                    <option value="0" disabled selected></option>
+                                    <option value="4">Diarrhea</option>
+                                    <option value="3">Loose</option>
+                                    <option value="2">Medium</option>
+                                    <option value="1">Firm</option>
+                                </select>
+                                <!-- <label>Consistency</label> -->
+                              </div>
+                        </div>
+
+                        <div class="row">
+                            <p>
+                                <label>
+                                    <input type="checkbox" name="urgent" />
+                                    <span>Urgent</span>
+                                </label>
+                            </p>
+                            <p>
+                                <label>
+                                    <input type="checkbox" name="explosive" />
+                                    <span>Explosive</span>
+                                </label>
+                            </p>
+                            <p>
+                                <label>
+                                    <input type="checkbox" name="blood" />
+                                    <span>Has Blood</span>
+                                </label>
+                            </p>
+                        </div>
+                        
+                        <div class="row">
+                            Minutes in bathroom
+                        </div>
+                        <div class="row">
+                            <p class="range-field">
+                                <input type="range" name="time" min="0" max="30" />
+                            </p>
+                        </div>
 
                     </div>
                 </li>
@@ -86,34 +128,37 @@
 
 <script type="text/javascript">
 
-document.addEventListener('DOMContentLoaded', function() {
-    let elems = document.querySelectorAll('.collapsible');
-    
-    let options = {};
-    let instances = M.Collapsible.init(elems, options);
+document.addEventListener("DOMContentLoaded", function() {
+    let elems = document.querySelectorAll(".collapsible");
+    M.Collapsible.init(elems, {});
+
+    elems = document.querySelectorAll("select");
+    M.FormSelect.init(elems, {});
 });
 
 // Change all form submits to make async post instead
 // https://pqina.nl/blog/async-form-posts-with-a-couple-lines-of-vanilla-javascript/
-document.querySelector("form").addEventListener("submit", e => {
-    const form = e.target;
-    console.log("Form submitted!");
-    const formFieldsAsObject = Object.fromEntries(new FormData(form).entries());
-    console.log(formFieldsAsObject);
+document.querySelectorAll("form").forEach(form => {
+    form.addEventListener("submit", e => {
+        const form = e.target;
+        console.log("Form submitted!");
+        const formFieldsAsObject = Object.fromEntries(new FormData(form).entries());
+        console.log(formFieldsAsObject);
 
-    // Post data using the Fetch API
-    fetch(form.action, {
-        method: form.method,
-        body: JSON.stringify(formFieldsAsObject),
-        headers: {"Content-Type": "application/json"}
+        // Post data using the Fetch API
+        fetch(form.action, {
+            method: form.method,
+            body: JSON.stringify(formFieldsAsObject),
+            headers: {"Content-Type": "application/json"}
+        });
+        //then
+        M.toast({html: "Successfully recorded!  Great job, you!", classes: "green accent-3"})
+        //catch
+        // M.toast({html: "Connection error. Please try again later.", classes: "pink accent-2"})
+
+        // Prevent the default form submit to stay on this page
+        e.preventDefault();
     });
-    //then
-    M.toast({html: "Successfully recorded!  Great job, you!", classes: "green accent-3"})
-    //catch
-    // M.toast({html: "Connection error. Please try again later.", classes: "pink accent-2"})
-
-    // Prevent the default form submit to stay on this page
-    e.preventDefault();
 });
 
 </script>
