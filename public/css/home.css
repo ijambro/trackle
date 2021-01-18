@@ -1,3 +1,4 @@
+/* Change the slider background and thumb colors */
 input[type=range]::-webkit-slider-thumb {
     background-color: #f50057;
 }

@@ -4,6 +4,7 @@
 <head>
     <%- include("../partials/head"); %>
         <link href="/css/home.css" rel="stylesheet" type="text/css">
+        <link href="/css/footer.css" rel="stylesheet" type="text/css">
 </head>
 
 <body>
@@ -139,7 +140,7 @@
     </main>
 
     <%- include("../partials/footer"); %>
-
+    
 </body>
 
 <script type="text/javascript">
@@ -168,9 +169,9 @@ document.querySelectorAll("form").forEach(form => {
             headers: {"Content-Type": "application/json"}
         });
         //then
-        M.toast({html: "Successfully recorded!  Great job, you!", classes: "green accent-3"})
+        M.toast({html: "Successfully recorded!  Great job, you!", classes: "rounded green accent-3"})
         //catch
-        // M.toast({html: "Connection error. Please try again later.", classes: "pink accent-2"})
+        // M.toast({html: "Connection error. Please try again later.", classes: "rounded pink accent-2"})
 
         // Prevent the default form submit to stay on this page
         e.preventDefault();

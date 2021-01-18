@@ -2,7 +2,7 @@
     <nav>
         <div class="nav-wrapper green accent-3">
             <a href="/" class="brand-logo">
-                &nbsp; Symptom Tracker
+                &nbsp; Trackle
             </a>
             <a href="#" data-target="sidenav" class="sidenav-trigger"><i class="material-icons">menu</i></a>
 
@@ -25,10 +25,8 @@
 <script type="text/javascript">
 
 document.addEventListener('DOMContentLoaded', function() {
-    var elems = document.querySelectorAll('.sidenav');
-    
-    var options = {};
-    var instances = M.Sidenav.init(elems, options);
+    let elems = document.querySelectorAll('.sidenav');
+    M.Sidenav.init(elems, {});
 });
 
 </script>
