@@ -1,5 +1,5 @@
 const express = require("express");
-const symptomsRouter = require("./routes/symptoms.js");
+const metricsRoutes = require("./routes/metrics.js");
 
 console.log("Preparing to launch Express.js server");
 
@@ -13,6 +13,7 @@ app.set('view engine', 'ejs');
 app.use(express.static(__dirname + '/public'));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
+app.set('json spaces', 2); //Pretty-print JSON responses
 
 // "Middleware" to log every request
 app.use(function(req, res, next) {
@@ -40,7 +41,7 @@ app.get("/login", (req, res) => {
 });
 
 // Routers for "mini-apps"
-app.use("/symptoms", symptomsRouter);
+app.use("/metrics", metricsRoutes);
 
 app.listen(port, () => console.log("Express.js server is listening on port " + port));
 

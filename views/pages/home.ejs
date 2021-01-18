@@ -12,12 +12,12 @@
 
     <main class="container">
 
-        <form id="allSymptomsForm" action="/symptoms" method="POST">
-            <ul class="collapsible">
-                <li>
-                    <div class="collapsible-header"><i class="material-icons pink-text text-accent-2">signal_cellular_connected_no_internet_4_bar</i>Pain</div>
-                    <div class="collapsible-body">
+        <ul class="collapsible">
+            <li>
+                <div class="collapsible-header"><i class="material-icons pink-text text-accent-2">signal_cellular_connected_no_internet_4_bar</i>Pain</div>
+                <div class="collapsible-body">
 
+                    <form action="/metrics/pain">
                         <div class="row">
                             Enter your pain level, darling:
                         </div>
@@ -27,13 +27,23 @@
                                 <input type="range" name="pain-level" min="0" max="10" />
                             </p>
                         </div>
+                        
+                        <div class="row">
+                            <div class="col right">
+                                <button class="btn pink accent-2 waves-effect waves-light" type="submit">
+                                    Record
+                                    <i class="material-icons right">send</i>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </li>
+            <li>
+                <div class="collapsible-header"><i class="material-icons pink-text text-accent-2">filter_drama</i>Gas</div>
+                <div class="collapsible-body">
 
-                    </div>
-                </li>
-                <li>
-                    <div class="collapsible-header"><i class="material-icons pink-text text-accent-2">filter_drama</i>Gas</div>
-                    <div class="collapsible-body">
-
+                    <form action="/metrics/gas">
                         <div class="row">
                             Are you gassy, my love?
                         </div>
@@ -44,36 +54,43 @@
                             </p>
                         </div>
 
-                    </div>
-                </li>
-                <li>
-                    <div class="collapsible-header"><i class="material-icons pink-text text-accent-2">whatshot</i>Poop</div>
-                    <div class="collapsible-body">
-
                         <div class="row">
-                            Did you poop, my dear?
+                            <div class="col right">
+                                <button class="btn pink accent-2 waves-effect waves-light" type="submit">
+                                    Record
+                                    <i class="material-icons right">send</i>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </li>
+            <li>
+                <div class="collapsible-header"><i class="material-icons pink-text text-accent-2">whatshot</i>Poop</div>
+                <div class="collapsible-body">
 
+                    <form action="/metrics/poop">
+                        <div class="row">
                             <div class="switch">
                                 <label>
-                                    No
+                                    No poop (decoy)
                                     <input type="checkbox" name="pooped">
-                                    <span class="lever"></span>
-                                    Yes!
+                                    <span class="lever pink accent-2"></span>
+                                    Yes, there were ploops and plops!
                                 </label>
-                              </div>
+                            </div>
                         </div>
                         <div class="row">
                             Consistency
                             <div class="input-field col s12">
-                                <select>
-                                    <option value="0" disabled selected></option>
+                                <select name="consistency">
                                     <option value="4">Diarrhea</option>
-                                    <option value="3">Loose</option>
+                                    <option value="3" selected>Loose</option>
                                     <option value="2">Medium</option>
                                     <option value="1">Firm</option>
                                 </select>
                                 <!-- <label>Consistency</label> -->
-                              </div>
+                                </div>
                         </div>
 
                         <div class="row">
@@ -106,19 +123,18 @@
                             </p>
                         </div>
 
-                    </div>
-                </li>
-            </ul>
-
-            <div class="row">
-                <div class="col right">
-                    <button class="btn pink accent-2 waves-effect waves-light" type="submit">
-                        Submit
-                        <i class="material-icons right">send</i>
-                    </button>
+                        <div class="row">
+                            <div class="col right">
+                                <button class="btn pink accent-2 waves-effect waves-light" type="submit">
+                                    Record
+                                    <i class="material-icons right">send</i>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
                 </div>
-            </div>            
-        </form>
+            </li>
+        </ul>
 
     </main>
 
@@ -147,7 +163,7 @@ document.querySelectorAll("form").forEach(form => {
 
         // Post data using the Fetch API
         fetch(form.action, {
-            method: form.method,
+            method: "POST",
             body: JSON.stringify(formFieldsAsObject),
             headers: {"Content-Type": "application/json"}
         });
