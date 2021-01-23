@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const influx = require("../controllers/InfluxRecorder");
 const cache = require("../controllers/CacheRecorder");
+const mysql = require("../controllers/MySQLRecorder");
 
 // Event / Symptom names
 const PAIN = "pain";
@@ -10,6 +11,8 @@ const POOP = "poop";
 // Metric names
 const LEVEL = "level";
 
+// TODO: User Management
+let currentUserId = 1;
 
 // Show all cached events
 
@@ -23,7 +26,8 @@ router.post("/pain", (req, res) => {
 
     let value = req.body["level"];
 
-    influx.writePoint(PAIN, LEVEL, value);
+    // influx.writePoint(PAIN, LEVEL, value);
+    mysql.writeMetric(currentUserId, PAIN, LEVEL, value);
     cache.writeMetric(PAIN, LEVEL, value);
 
     res.sendStatus(200);
@@ -35,7 +39,8 @@ router.post("/gas", (req, res) => {
 
     let value = req.body["level"];
 
-    influx.writePoint(GAS, LEVEL, value);
+    // influx.writePoint(GAS, LEVEL, value);
+    mysql.writeMetric(currentUserId, GAS, LEVEL, value);
     cache.writeMetric(GAS, LEVEL, value);
 
     res.sendStatus(200);
@@ -58,7 +63,8 @@ router.post("/poop", (req, res) => {
         poopMetrics["blood"] = req.body["blood"] ? true : false;
     }
 
-    // writeEvent(POOP, poopMetrics);
+    // influx.writePoint(POOP, poopMetrics);
+    mysql.writeMetrics(currentUserId, POOP, poopMetrics);
     cache.writeMetrics(POOP, poopMetrics);
 
     res.sendStatus(200);
