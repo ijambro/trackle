@@ -51,19 +51,26 @@ router.post("/poop", (req, res) => {
     console.log("Submitted event: poop");
 
     let poopMetrics = {
-        duration: req.body["duration"],
+        duration: Number(req.body["duration"]),
         pooped: false
     }
 
     if (req.body["pooped"]) {
         poopMetrics["pooped"] = true;
-        poopMetrics["consistency"] = req.body["consistency"];
+        poopMetrics["consistency"] = Number(req.body["consistency"]);
         poopMetrics["urgent"] = req.body["urgent"] ? true : false;
         poopMetrics["explosive"] = req.body["explosive"] ? true : false;
         poopMetrics["blood"] = req.body["blood"] ? true : false;
     }
 
-    // influx.writePoint(POOP, poopMetrics);
+    // Calculate a poop discomfort level for InfluxDB:
+    // consistency + 1 for each of urgent, explosive or blood
+    let poopLevel = poopMetrics["consistency"] + 
+        (poopMetrics["urgent"] ? 1 : 0) +
+        (poopMetrics["explosive"] ? 1 : 0) +
+        (poopMetrics["blood"] ? 1 : 0);
+
+    influx.writePoint(POOP, LEVEL, poopLevel);
     mysql.writeMetrics(currentUserId, POOP, poopMetrics);
     cache.writeMetrics(POOP, poopMetrics);
 
