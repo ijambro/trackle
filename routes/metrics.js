@@ -26,7 +26,7 @@ router.post("/pain", (req, res) => {
 
     let value = req.body["level"];
 
-    // influx.writePoint(PAIN, LEVEL, value);
+    influx.writePoint(PAIN, LEVEL, value);
     mysql.writeMetric(currentUserId, PAIN, LEVEL, value);
     cache.writeMetric(PAIN, LEVEL, value);
 
@@ -39,7 +39,7 @@ router.post("/gas", (req, res) => {
 
     let value = req.body["level"];
 
-    // influx.writePoint(GAS, LEVEL, value);
+    influx.writePoint(GAS, LEVEL, value);
     mysql.writeMetric(currentUserId, GAS, LEVEL, value);
     cache.writeMetric(GAS, LEVEL, value);
 
