@@ -11,9 +11,6 @@ const POOP = "poop";
 // Metric names
 const LEVEL = "level";
 
-// TODO: User Management
-let currentUserId = 1;
-
 // Show all cached events
 
 router.get("/", (req, res) => {
@@ -27,7 +24,7 @@ router.post("/pain", (req, res) => {
     let value = req.body["level"];
 
     influx.writePoint(PAIN, LEVEL, value);
-    mysql.writeMetric(currentUserId, PAIN, LEVEL, value);
+    mysql.writeMetric(req.session.userId, PAIN, LEVEL, value);
     cache.writeMetric(PAIN, LEVEL, value);
 
     res.sendStatus(200);
@@ -40,7 +37,7 @@ router.post("/gas", (req, res) => {
     let value = req.body["level"];
 
     influx.writePoint(GAS, LEVEL, value);
-    mysql.writeMetric(currentUserId, GAS, LEVEL, value);
+    mysql.writeMetric(req.session.userId, GAS, LEVEL, value);
     cache.writeMetric(GAS, LEVEL, value);
 
     res.sendStatus(200);
@@ -71,7 +68,7 @@ router.post("/poop", (req, res) => {
         (poopMetrics["blood"] ? 1 : 0);
 
     influx.writePoint(POOP, LEVEL, poopLevel);
-    mysql.writeMetrics(currentUserId, POOP, poopMetrics);
+    mysql.writeMetrics(req.session.userId, POOP, poopMetrics);
     cache.writeMetrics(POOP, poopMetrics);
 
     res.sendStatus(200);

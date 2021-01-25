@@ -1,0 +1,28 @@
+<header>
+    <nav>
+        <div class="nav-wrapper green accent-3">
+            <a href="/" class="brand-logo">
+                &nbsp; Trackle
+            </a>
+            <a href="#" data-target="sidenav" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+
+            <ul id="nav-mobile" class="right hide-on-med-and-down">
+                <li><a href="/about"><i class="material-icons right">info</i>About</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <ul id="sidenav" class="sidenav pink accent-2">
+        <li><a href="/about" class="white-text"><i class="material-icons white-text left">info</i>About</a></li>
+    </ul>
+
+</header>
+
+<script type="text/javascript">
+
+document.addEventListener('DOMContentLoaded', function() {
+    let elems = document.querySelectorAll('.sidenav');
+    M.Sidenav.init(elems, {});
+});
+
+</script>

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <%- include("../partials/head"); %>
+        <link href="/css/login.css" rel="stylesheet" type="text/css">
+        <link href="/css/footer.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+
+    <%- include("../partials/header-login"); %>
+
+    <main class="container">
+
+        <form action="/auth" method="POST">
+            <div class="row">
+                <div class="input-field col s12">
+                    <input id="email" name="email" type="email" class="validate">
+                    <label for="email">Email Address</label>
+                  </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s12">
+                    <input id="password" name="password" type="password" class="validate">
+                    <label for="password">Password</label>
+                  </div>
+            </div>
+
+            <div class="row">
+                <div class="col right">
+                    <button class="btn pink accent-2 waves-effect waves-light" type="submit">
+                        Login
+                        <i class="material-icons right">send</i>
+                    </button>
+                </div>
+            </div>
+        </form>
+
+    </main>
+
+    <%- include("../partials/footer"); %>
+
+</body>
+
+<script type="text/javascript">
+
+document.addEventListener("DOMContentLoaded", function() {
+    // let elems = document.querySelectorAll(".collapsible");
+    // M.Collapsible.init(elems, {});
+});
+
+</script>
+
+</html>
