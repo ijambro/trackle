@@ -27,21 +27,30 @@
             </div>
             <div id="login" class="col s12">
 
-                <form action="/auth" method="POST">
+                <form action="/login" method="POST">
                     <div class="row">
                         <div class="input-field col s12">
-                            <input id="email" name="email" type="email" class="validate">
+                            <i class="material-icons prefix pink-text text-accent-2">account_circle</i>
+                            <input id="email" name="email" type="email" class="validate" 
+                                <% if (locals.email) { %> value="<%= email %>" <% } %>
+                            >
                             <label for="email">Email Address</label>
                         </div>
                     </div>
                     <div class="row">
                         <div class="input-field col s12">
+                            <i class="material-icons prefix pink-text text-accent-2">password</i>
                             <input id="password" name="password" type="password" class="validate">
                             <label for="password">Password</label>
                         </div>
                     </div>
 
                     <div class="row">
+                        <% if (locals.error_message) { %>
+                        <div class="col left">
+                            <p class="red-text"><i class="material-icons red-text">error</i> <%- error_message %></p>
+                        </div>
+                        <% } %>
                         <div class="col right">
                             <button class="btn pink accent-2 waves-effect waves-light" type="submit">
                                 Login

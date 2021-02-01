@@ -1,5 +1,6 @@
 const express = require("express");
 const session = require("express-session");
+const mysqlRecorder = require("./controllers/MySQLRecorder");
 const metricsRoutes = require("./routes/metrics.js");
 
 console.log("Preparing to launch Express.js server");
@@ -13,6 +14,9 @@ let sessionSecret = process.env.APP_SESSION_SECRET;
 if (sessionSecret == null || sessionSecret == "") {
     sessionSecret = "TrackleYourSymptoms";
 }
+
+const NO_LOGIN = "Please login to use the application.";
+const INCORRECT_LOGIN = "Incorrect email or password.  Please try again.";
 
 app.set('view engine', 'ejs');
 app.use(express.static(__dirname + '/public'));
@@ -44,7 +48,7 @@ app.use(function(req, res, next) {
 function verifyLoggedIn(req, res, next) {
 	console.log("verifyLoggedIn: " + req.url);
 
-    // If not logged in, render the home page
+    // If logged in, render the requested page
     if (req.session && req.session.isLoggedIn === true) {
         console.log("User is logged in, with user_id = " + req.session.userId);
         next();
@@ -52,7 +56,9 @@ function verifyLoggedIn(req, res, next) {
     // Else, redirect to the login page
     else {
         console.log("User is not logged in.  Redirecting to login page.")
-        res.redirect("/login");
+        res.render("pages/login", {
+            error_message: NO_LOGIN
+        });
         return;
     }
 }
@@ -70,18 +76,29 @@ app.get("/logout", (req, res) => {
     });
 });
 
-app.post("/auth", (req, res) => {
-    console.log("Authenticating!");
+app.post("/login", async (req, res) => {
+    console.log("Authenticating " + req.body["email"]);
 
-    //TODO: Authenticate the req.body["email"] and req.body["password"]
+    // Authenticate the req.body["email"] and req.body["password"]
+    let user = await mysqlRecorder.authenticate(req.body["email"], req.body["password"]);
+    console.log("Response from MysqlRecorder: ");
+    console.log(user);
 
-    req.session.isLoggedIn = true;
-    req.session.userId = 1;
-    req.session.userFirstName = "First";
-    req.session.userLastName = "Last";
-    req.session.userEmail = "user@email.com";
+    if (user && user.email === req.body["email"]) {
+        req.session.isLoggedIn = true;
+        req.session.userId = user.id;
+        req.session.userEmail = user.email;
+        req.session.userFirstName = user.first_name;
+        req.session.userLastName = user.last_name;
 
-    res.redirect("/");
+        res.redirect("/");
+    } else {
+        res.render("pages/login", {
+            error_message: INCORRECT_LOGIN,
+            email: req.body["email"]
+        });
+    }
+
 });
 
 //WEB ROUTES (authenticated)
