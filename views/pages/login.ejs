@@ -30,7 +30,7 @@
                 <form action="/login" method="POST">
                     <div class="row">
                         <div class="input-field col s12">
-                            <i class="material-icons prefix pink-text text-accent-2">account_circle</i>
+                            <i class="material-icons prefix pink-text text-accent-2">alternate_email</i>
                             <input id="email" name="email" type="email" class="validate" 
                                 <% if (locals.email) { %> value="<%= email %>" <% } %>
                             >
@@ -39,9 +39,9 @@
                     </div>
                     <div class="row">
                         <div class="input-field col s12">
-                            <i class="material-icons prefix pink-text text-accent-2">password</i>
+                            <i class="material-icons prefix pink-text text-accent-2">vpn_key</i>
                             <input id="password" name="password" type="password" class="validate">
-                            <label for="password">Password</label>
+                            <label for="password">Enter your Password</label>
                         </div>
                     </div>
 
@@ -63,7 +63,53 @@
             </div>
 
             <div id="register" class="col s12">
-                Coming soon: Register for your free Trackle account here!
+                
+                <form action="/register" method="POST">
+                    <div class="row">
+                        <div class="input-field col s6">
+                            <i class="material-icons prefix pink-text text-accent-2">account_circle</i>
+                            <input id="first_name" name="first_name" type="text" class="">
+                            <label for="first_name">First Name</label>
+                        </div>
+                        <div class="input-field col s6">
+                            <!-- <i class="material-icons prefix pink-text text-accent-2">account_circle</i> -->
+                            <input id="last_name" name="last_name" type="text" class="">
+                            <label for="last_name">Last Name</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <i class="material-icons prefix pink-text text-accent-2">alternate_email</i>
+                            <input id="create_email" name="email" type="email" class="validate"
+                            <% if (locals.email) { %> value="<%= email %>" <% } %>
+                            >
+                            <label for="create_email">Email Address</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <i class="material-icons prefix pink-text text-accent-2">vpn_key</i>
+                            <input id="create_password" name="password" type="password" class="validate">
+                            <label for="create_password">Enter a Password</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <i class="material-icons prefix pink-text text-accent-2">password</i>
+                            <input id="confirm_password" name="confirm_password" type="password" class="validate">
+                            <label for="confirm_password">Confirm Password</label>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col right">
+                            <button class="btn pink accent-2 waves-effect waves-light" type="submit">
+                                Create my free account
+                                <i class="material-icons right">send</i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
             </div>
         
         </div>

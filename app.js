@@ -17,6 +17,8 @@ if (sessionSecret == null || sessionSecret == "") {
 
 const NO_LOGIN = "Please login to use the application.";
 const INCORRECT_LOGIN = "Incorrect email or password.  Please try again.";
+const CREATE_FAILED = "Registration failed.  Please try again.";
+const PASSWORDS_MUST_MATCH = "You must enter matching passwords.  Please try again.";
 
 app.set('view engine', 'ejs');
 app.use(express.static(__dirname + '/public'));
@@ -101,10 +103,46 @@ app.post("/login", async (req, res) => {
 
 });
 
+app.post("/register", async (req, res) => {
+    console.log("Registering " + req.body["email"]);
+
+    if (req.body["password"] !== req.body["confirm_password"]) {
+        res.render("pages/login", {
+            error_message: PASSWORDS_MUST_MATCH,
+            email: req.body["email"]
+        });
+        return;
+    }
+
+    // Store all the fields for the new user
+    let user = await mysqlRecorder.create(req.body["email"], req.body["password"],
+        req.body["first_name"], req.body["last_name"]);
+    console.log("Response from MysqlRecorder: ");
+    console.log(user);
+
+    if (user && user.email === req.body["email"]) {
+        req.session.isLoggedIn = true;
+        req.session.userId = user.id;
+        req.session.userEmail = user.email;
+        req.session.userFirstName = user.first_name;
+        req.session.userLastName = user.last_name;
+
+        res.redirect("/");
+    } else {
+        res.render("pages/login", {
+            error_message: CREATE_FAILED,
+            email: req.body["email"]
+        });
+    }
+
+});
+
 //WEB ROUTES (authenticated)
 
 app.get("/", verifyLoggedIn, (req, res) => {
-    res.render("pages/home");
+    res.render("pages/home", {
+        userFirstName: req.session.userFirstName
+    });
 });
 
 app.use("/metrics", verifyLoggedIn, metricsRoutes);

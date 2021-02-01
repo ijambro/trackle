@@ -6,9 +6,10 @@ const pool = mysql.createPool(db_url);
 const promisePool = pool.promise();
 
 const Q_AUTH = "SELECT * FROM Users WHERE email = ? AND password = ? LIMIT 1";
+const Q_INSERT_USER = "INSERT INTO Users (email, password, first_name, last_name) VALUES (?, ?, ?, ?)";
 const Q_INSERT_METRIC = "INSERT INTO Metrics (user_id, type, metrics) VALUES (?, ?, ?)";
 
-async function authenticate(email, password) {
+module.exports.authenticate = async function(email, password) {
     let sql = mysql.format(Q_AUTH, [email, password]);
     console.log("Running SQL: " + sql);
     
@@ -19,6 +20,27 @@ async function authenticate(email, password) {
         console.log(rows);
         if (rows.length > 0) {
             user = rows[0];
+        }
+    } catch (e) {
+        console.error(e);
+    }
+    return user;
+}
+
+module.exports.create = async function(email, password, first_name, last_name) {
+    let sql = mysql.format(Q_INSERT_USER, [email, password, first_name, last_name]);
+    console.log("Running SQL: " + sql);
+    
+    let user = {};
+    try {
+        const [result, fields] = await promisePool.query(sql);
+        console.log("MySQL result:");
+        console.log(result);
+        if (result.affectedRows === 1 && result.insertId > 0) {
+            user["id"] = result.insertId;
+            user["email"] = email;
+            user["first_name"] = first_name;
+            user["last_name"] = last_name;
         }
     } catch (e) {
         console.error(e);
@@ -46,6 +68,5 @@ function writeMetrics(userId, type, metrics) {
     });
 }
 
-module.exports.authenticate = authenticate;
 module.exports.writeMetric = writeMetric;
 module.exports.writeMetrics = writeMetrics;
