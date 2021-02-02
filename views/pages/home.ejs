@@ -31,14 +31,7 @@
                             </p>
                         </div>
                         
-                        <div class="row">
-                            <div class="col right">
-                                <button class="btn pink accent-2 waves-effect waves-light" type="submit">
-                                    Record
-                                    <i class="material-icons right">send</i>
-                                </button>
-                            </div>
-                        </div>
+                        <%- include("../partials/submit", { suffix: "pain" }); %>
                     </form>
                 </div>
             </li>
@@ -57,14 +50,7 @@
                             </p>
                         </div>
 
-                        <div class="row">
-                            <div class="col right">
-                                <button class="btn pink accent-2 waves-effect waves-light" type="submit">
-                                    Record
-                                    <i class="material-icons right">send</i>
-                                </button>
-                            </div>
-                        </div>
+                        <%- include("../partials/submit", { suffix: "gas" }); %>
                     </form>
                 </div>
             </li>
@@ -126,14 +112,7 @@
                             </p>
                         </div>
 
-                        <div class="row">
-                            <div class="col right">
-                                <button class="btn pink accent-2 waves-effect waves-light" type="submit">
-                                    Record
-                                    <i class="material-icons right">send</i>
-                                </button>
-                            </div>
-                        </div>
+                        <%- include("../partials/submit", { suffix: "poop" }); %>
                     </form>
                 </div>
             </li>
@@ -153,6 +132,13 @@ document.addEventListener("DOMContentLoaded", function() {
 
     elems = document.querySelectorAll("select");
     M.FormSelect.init(elems, {});
+
+    // Earlier date and time pickers
+    elems = document.querySelectorAll(".datepicker");
+    M.Datepicker.init(elems, { format: "yyyy-mm-dd" });
+
+    elems = document.querySelectorAll(".timepicker");
+    M.Timepicker.init(elems, {});
 });
 
 // Change all form submits to make async post instead
@@ -161,7 +147,7 @@ document.querySelectorAll("form").forEach(form => {
     form.addEventListener("submit", e => {
         const form = e.target;
         console.log("Form submitted!");
-        const formFieldsAsObject = Object.fromEntries(new FormData(form).entries());
+        let formFieldsAsObject = Object.fromEntries(new FormData(form).entries());
         console.log(formFieldsAsObject);
 
         // Post data using the Fetch API
