@@ -70,3 +70,7 @@ function writeMetrics(userId, type, metrics) {
 
 module.exports.writeMetric = writeMetric;
 module.exports.writeMetrics = writeMetrics;
+
+// Share the pool for use by the MySQLSessionStore (express-mysql-session)
+module.exports.pool = pool;
+module.exports.promisePool = promisePool;

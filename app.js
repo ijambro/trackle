@@ -1,5 +1,6 @@
 const express = require("express");
 const session = require("express-session");
+const MySQLSessionStore = require("express-mysql-session")(session);
 const mysqlRecorder = require("./controllers/MySQLRecorder");
 const metricsRoutes = require("./routes/metrics.js");
 
@@ -27,8 +28,9 @@ app.use(express.json());
 app.set('json spaces', 2); //Pretty-print JSON responses
 app.use(session({
 	secret: sessionSecret,
-	resave: true,
-    saveUninitialized: true
+	resave: false,
+    saveUninitialized: false,
+    store: new MySQLSessionStore({}, mysqlRecorder.promisePool)
 }));
 
 // "Middleware" to log every request
