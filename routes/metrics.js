@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const utils = require("../utils");
 const influx = require("../controllers/InfluxRecorder");
 const cache = require("../controllers/CacheRecorder");
 const mysql = require("../controllers/MySQLRecorder");
@@ -23,9 +24,15 @@ router.post("/pain", (req, res) => {
 
     let value = req.body["level"];
 
-    influx.writePoint(PAIN, LEVEL, value);
-    mysql.writeMetric(req.session.userId, PAIN, LEVEL, value);
-    cache.writeMetric(PAIN, LEVEL, value);
+    if (req.body["earlier"] && (req.body["earlier_date"] || req.body["earlier_time"])) {
+        let ts = utils.convertDateTimeValuesToTimestamp(req.body["earlier_date"], req.body["earlier_time"]);
+        console.log("Parsed timestamp: " + ts);
+        mysql.writeMetricAtTime(ts, req.session.userId, PAIN, LEVEL, value);
+    } else {
+        // influx.writePoint(PAIN, LEVEL, value);
+        mysql.writeMetric(req.session.userId, PAIN, LEVEL, value);
+        // cache.writeMetric(PAIN, LEVEL, value);
+    }
 
     res.sendStatus(200);
 });
@@ -36,9 +43,15 @@ router.post("/gas", (req, res) => {
 
     let value = req.body["level"];
 
-    influx.writePoint(GAS, LEVEL, value);
-    mysql.writeMetric(req.session.userId, GAS, LEVEL, value);
-    cache.writeMetric(GAS, LEVEL, value);
+    if (req.body["earlier"] && (req.body["earlier_date"] || req.body["earlier_time"])) {
+        let ts = utils.convertDateTimeValuesToTimestamp(req.body["earlier_date"], req.body["earlier_time"]);
+        console.log("Parsed timestamp: " + ts);
+        mysql.writeMetricAtTime(ts, req.session.userId, GAS, LEVEL, value);
+    } else {
+        // influx.writePoint(GAS, LEVEL, value);
+        mysql.writeMetric(req.session.userId, GAS, LEVEL, value);
+        // cache.writeMetric(GAS, LEVEL, value);
+    }
 
     res.sendStatus(200);
 });
@@ -67,10 +80,16 @@ router.post("/poop", (req, res) => {
         (poopMetrics["explosive"] ? 1 : 0) +
         (poopMetrics["blood"] ? 1 : 0);
 
-    influx.writePoint(POOP, LEVEL, poopLevel);
-    mysql.writeMetrics(req.session.userId, POOP, poopMetrics);
-    cache.writeMetrics(POOP, poopMetrics);
-
+    if (req.body["earlier"] && (req.body["earlier_date"] || req.body["earlier_time"])) {
+        let ts = utils.convertDateTimeValuesToTimestamp(req.body["earlier_date"], req.body["earlier_time"]);
+        console.log("Parsed timestamp: " + ts);
+        mysql.writeMetricsAtTime(ts, req.session.userId, POOP, poopMetrics);
+    } else {
+        // influx.writePoint(POOP, LEVEL, poopLevel);
+        mysql.writeMetrics(req.session.userId, POOP, poopMetrics);
+        // cache.writeMetrics(POOP, poopMetrics);
+    }
+    
     res.sendStatus(200);
 });
 

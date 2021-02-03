@@ -8,6 +8,7 @@ const promisePool = pool.promise();
 const Q_AUTH = "SELECT * FROM Users WHERE email = ? AND password = ? LIMIT 1";
 const Q_INSERT_USER = "INSERT INTO Users (email, password, first_name, last_name) VALUES (?, ?, ?, ?)";
 const Q_INSERT_METRIC = "INSERT INTO Metrics (user_id, type, metrics) VALUES (?, ?, ?)";
+const Q_INSERT_METRIC_AT_TIME = "INSERT INTO Metrics (time, user_id, type, metrics) VALUES (?, ?, ?, ?)";
 
 module.exports.authenticate = async function(email, password) {
     let sql = mysql.format(Q_AUTH, [email, password]);
@@ -54,6 +55,12 @@ function writeMetric(userId, type, metricName, metricValue) {
     writeMetrics(userId, type, metrics);
 }
 
+function writeMetricAtTime(time, userId, type, metricName, metricValue) {
+    let metrics = {};
+    metrics[metricName] = metricValue;
+    writeMetricsAtTime(time, userId, type, metrics);
+}
+
 function writeMetrics(userId, type, metrics) {
     console.log("Writing " + type + " metrics to MySQL: " + JSON.stringify(metrics));
 
@@ -62,7 +69,21 @@ function writeMetrics(userId, type, metrics) {
     
     pool.query(sql, function(error, results, fields) {
             console.log("MySQL Insert completed!");
-            if (error) throw error;
+            if (error) return console.error(error);
+            
+            console.log("MySQL Success!");
+    });
+}
+
+function writeMetricsAtTime(time, userId, type, metrics) {
+    console.log("Writing " + type + " metrics to MySQL: " + JSON.stringify(metrics) + " at time " + time);
+
+    let sql = mysql.format(Q_INSERT_METRIC_AT_TIME, [time, userId, type, JSON.stringify(metrics)]);
+    console.log("Running SQL: " + sql);
+    
+    pool.query(sql, function(error, results, fields) {
+            console.log("MySQL Insert completed!");
+            if (error) return console.error(error);
             
             console.log("MySQL Success!");
     });
@@ -70,6 +91,8 @@ function writeMetrics(userId, type, metrics) {
 
 module.exports.writeMetric = writeMetric;
 module.exports.writeMetrics = writeMetrics;
+module.exports.writeMetricAtTime = writeMetricAtTime;
+module.exports.writeMetricsAtTime = writeMetricsAtTime;
 
 // Share the pool for use by the MySQLSessionStore (express-mysql-session)
 module.exports.pool = pool;
