@@ -63,13 +63,13 @@
                             <div class="switch">
                                 <label>
                                     No poop (decoy)
-                                    <input type="checkbox" name="pooped">
+                                    <input id="pooped_switch" type="checkbox" name="pooped">
                                     <span class="lever pink accent-2"></span>
-                                    Yes, there were ploops and plops!
+                                    Yes, ploops and plops!
                                 </label>
                             </div>
                         </div>
-                        <div class="row">
+                        <div id="poop_consistency" class="row hide">
                             Consistency
                             <div class="input-field col s12">
                                 <select name="consistency" class="browser-default">
@@ -139,6 +139,10 @@ document.addEventListener("DOMContentLoaded", function() {
 
     elems = document.querySelectorAll(".timepicker");
     M.Timepicker.init(elems, {});
+});
+
+document.getElementById("pooped_switch").addEventListener("change", () => {
+    document.getElementById("poop_consistency").classList.toggle("hide");
 });
 
 // Change all form submits to make async post instead
