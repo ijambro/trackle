@@ -12,3 +12,7 @@ main {
 footer .row {
     margin-bottom: 0px;
 }
+
+footer .row.mobile-extender {
+    padding-bottom: 50px;
+}
