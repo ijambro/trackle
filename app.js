@@ -84,8 +84,10 @@ app.post("/login", async (req, res) => {
     console.log("Authenticating " + req.body["email"]);
 
     // Authenticate the req.body["email"] and req.body["password"]
-    let user = await mysqlRecorder.authenticate(req.body["email"], req.body["password"]);
-    console.log("Response from MysqlRecorder: ");
+    let user = await mysqlRecorder.authenticate(
+        req.body["email"], 
+        req.body["password"]);
+    console.log("Response from MySQLRecorder: ");
     console.log(user);
 
     if (user && user.email === req.body["email"]) {
@@ -94,6 +96,7 @@ app.post("/login", async (req, res) => {
         req.session.userEmail = user.email;
         req.session.userFirstName = user.first_name;
         req.session.userLastName = user.last_name;
+        req.session.userTimezoneOffset = req.body["tzOffset"];
 
         res.redirect("/");
     } else {
@@ -117,9 +120,12 @@ app.post("/register", async (req, res) => {
     }
 
     // Store all the fields for the new user
-    let user = await mysqlRecorder.create(req.body["email"], req.body["password"],
-        req.body["first_name"], req.body["last_name"]);
-    console.log("Response from MysqlRecorder: ");
+    let user = await mysqlRecorder.create(
+        req.body["email"], 
+        req.body["password"],
+        req.body["first_name"], 
+        req.body["last_name"]);
+    console.log("Response from MySQLRecorder: ");
     console.log(user);
 
     if (user && user.email === req.body["email"]) {
@@ -128,6 +134,7 @@ app.post("/register", async (req, res) => {
         req.session.userEmail = user.email;
         req.session.userFirstName = user.first_name;
         req.session.userLastName = user.last_name;
+        req.session.userTimezoneOffset = req.body["tzOffset"];
 
         res.redirect("/");
     } else {

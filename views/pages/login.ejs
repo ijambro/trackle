@@ -124,6 +124,16 @@
 document.addEventListener("DOMContentLoaded", function() {
     let elems = document.querySelectorAll(".tabs");
     M.Tabs.init(elems, {});
+
+    // Add a hidden tzOffset to each form
+    elems = document.querySelectorAll("form");
+    elems.forEach(f => {
+        let input = document.createElement("input");
+        input.setAttribute("type", "hidden");
+        input.setAttribute("name", "tzOffset");
+        input.setAttribute("value", new Date().getTimezoneOffset());
+        f.appendChild(input);
+    });
 });
 
 </script>

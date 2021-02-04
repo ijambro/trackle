@@ -2,16 +2,18 @@
  * Convert to a MySQL timestamp format "yyyy-MM-dd hh:mm:ss"
  * @param {String} date in format "yyyy-MM-dd".  Use current date if empty.
  * @param {String} time in format "hh:mm AM".  Use current time if empty.
- * Will not be called if both date and time are empty (would use writeMetric with default timestamp instead)
+ * @param {int} userTimezoneOffsetMinutes Represents minutes behind UTC from user's client-side JavaScript Date.
+ * 
+ * This function will not be called if both date and time are empty (routers would use writeMetric with default timestamp instead)
  */
-module.exports.convertDateTimeValuesToTimestamp = function(date, time) {
+module.exports.convertDateTimeValuesToTimestamp = function(date, time, userTimezoneOffsetMinutes) {
     if (!date) {
-        date = getCurrentDateString();
+        date = getCurrentDateString(userTimezoneOffsetMinutes);
     }
 
     let hhmm = "00:00";
     if (!time) {
-        hhmm = getCurrentTimeString();
+        hhmm = getCurrentTimeString(userTimezoneOffsetMinutes);
     } else if (time.endsWith(" AM") && time.length === 8 && time.charAt(2) == ':') {
         // If hh = 12 AM, convert to 00
         let hh = parseInt(time.substr(0, 2), 10);
@@ -35,11 +37,27 @@ module.exports.convertDateTimeValuesToTimestamp = function(date, time) {
     }
 
     // Append date, time and timezone offset together
-    return `${date} ${hhmm}:00${getCurrentTimeZoneOffset()}`;
+    return `${date} ${hhmm}:00${getTimeZoneOffsetString(userTimezoneOffsetMinutes)}`;
 }
 
-function getCurrentDateString() {
+function getCurrentDateInUserTimezone(userTimezoneOffsetMinutes) {
+    // current date on server
     let currDate = new Date();
+    console.log("getCurrentDateInUserTimezone : current on server: " + currDate);
+    // difference between the user's tzOffset and server's tzOffset
+    let tzOffsetDiff = userTimezoneOffsetMinutes - currDate.getTimezoneOffset();
+    console.log("getCurrentDateInUserTimezone : user offset=" + userTimezoneOffsetMinutes);
+    console.log("getCurrentDateInUserTimezone : srvr offset=" + currDate.getTimezoneOffset());
+    console.log("getCurrentDateInUserTimezone : diff offset=" + tzOffsetDiff);
+
+    currDate.setMinutes(currDate.getMinutes() - tzOffsetDiff); //current date in user's browser
+    console.log("getCurrentDateInUserTimezone : current for user: " + currDate);
+    return currDate;
+}
+
+function getCurrentDateString(userTimezoneOffsetMinutes) {
+    let currDate = getCurrentDateInUserTimezone(userTimezoneOffsetMinutes);
+
     let MM = 1 + currDate.getMonth();
     if (MM < 10) {
         MM = "0" + MM;
@@ -51,8 +69,9 @@ function getCurrentDateString() {
     return `${currDate.getFullYear()}-${MM}-${dd}`;
 }
 
-function getCurrentTimeString() {
-    let currDate = new Date();
+function getCurrentTimeString(userTimezoneOffsetMinutes) {
+    let currDate = getCurrentDateInUserTimezone(userTimezoneOffsetMinutes);
+
     let hh = currDate.getHours();
     if (hh < 10) {
         hh = "0" + hh;
@@ -64,21 +83,24 @@ function getCurrentTimeString() {
     return `${hh}:${mm}`;
 }
 
-function getCurrentTimeZoneOffset() {
+/**
+ * Convert the user's browser's timezone to the offset string.
+ * @param {int} userTimezoneOffsetMinutes Represents minutes behind UTC.  Positive values are behind UTC, so these get a minus sign.
+ */
+function getTimeZoneOffsetString(userTimezoneOffsetMinutes) {
     let tzOffset = "";
-    let tzOffsetMinutes = new Date().getTimezoneOffset(); //Represents minutes behind UTC
     
-    let offsetHours = parseInt(Math.abs(tzOffsetMinutes / 60));
-    let offsetMins = Math.abs(tzOffsetMinutes % 60);
+    let offsetHours = parseInt(Math.abs(userTimezoneOffsetMinutes / 60));
+    let offsetMins = Math.abs(userTimezoneOffsetMinutes % 60);
     if (offsetHours < 10) {
         offsetHours = "0" + offsetHours;
     }
     if (offsetMins < 10) {
         offsetMins = "0" + offsetMins;
     }
-    if (tzOffsetMinutes < 0) {
+    if (userTimezoneOffsetMinutes < 0) {
         tzOffset = '+' + offsetHours + ':' + offsetMins;
-    } else if (tzOffsetMinutes > 0) {
+    } else if (userTimezoneOffsetMinutes > 0) {
         tzOffset = '-' + offsetHours + ':' + offsetMins;
     } else {
         // Do not specify an offset when time zone is UTC (offset = 0)

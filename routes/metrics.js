@@ -25,7 +25,10 @@ router.post("/pain", (req, res) => {
     let value = req.body["level"];
 
     if (req.body["earlier"] && (req.body["earlier_date"] || req.body["earlier_time"])) {
-        let ts = utils.convertDateTimeValuesToTimestamp(req.body["earlier_date"], req.body["earlier_time"]);
+        let ts = utils.convertDateTimeValuesToTimestamp(
+            req.body["earlier_date"], 
+            req.body["earlier_time"],
+            req.session.userTimezoneOffset);
         console.log("Parsed timestamp: " + ts);
         mysql.writeMetricAtTime(ts, req.session.userId, PAIN, LEVEL, value);
     } else {
@@ -44,7 +47,10 @@ router.post("/gas", (req, res) => {
     let value = req.body["level"];
 
     if (req.body["earlier"] && (req.body["earlier_date"] || req.body["earlier_time"])) {
-        let ts = utils.convertDateTimeValuesToTimestamp(req.body["earlier_date"], req.body["earlier_time"]);
+        let ts = utils.convertDateTimeValuesToTimestamp(
+            req.body["earlier_date"], 
+            req.body["earlier_time"],
+            req.session.userTimezoneOffset);
         console.log("Parsed timestamp: " + ts);
         mysql.writeMetricAtTime(ts, req.session.userId, GAS, LEVEL, value);
     } else {
@@ -81,7 +87,10 @@ router.post("/poop", (req, res) => {
         (poopMetrics["blood"] ? 1 : 0);
 
     if (req.body["earlier"] && (req.body["earlier_date"] || req.body["earlier_time"])) {
-        let ts = utils.convertDateTimeValuesToTimestamp(req.body["earlier_date"], req.body["earlier_time"]);
+        let ts = utils.convertDateTimeValuesToTimestamp(
+            req.body["earlier_date"], 
+            req.body["earlier_time"],
+            req.session.userTimezoneOffset);
         console.log("Parsed timestamp: " + ts);
         mysql.writeMetricsAtTime(ts, req.session.userId, POOP, poopMetrics);
     } else {
@@ -89,7 +98,7 @@ router.post("/poop", (req, res) => {
         mysql.writeMetrics(req.session.userId, POOP, poopMetrics);
         // cache.writeMetrics(POOP, poopMetrics);
     }
-    
+
     res.sendStatus(200);
 });
 
