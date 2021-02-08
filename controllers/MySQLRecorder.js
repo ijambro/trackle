@@ -7,6 +7,7 @@ const promisePool = pool.promise();
 
 const Q_AUTH = "SELECT * FROM Users WHERE email = ? AND password = ? LIMIT 1";
 const Q_INSERT_USER = "INSERT INTO Users (email, password, first_name, last_name) VALUES (?, ?, ?, ?)";
+const Q_SELECT_METRICS = "SELECT * FROM Metrics WHERE user_id = ?";
 const Q_INSERT_METRIC = "INSERT INTO Metrics (user_id, type, metrics) VALUES (?, ?, ?)";
 const Q_INSERT_METRIC_AT_TIME = "INSERT INTO Metrics (time, user_id, type, metrics) VALUES (?, ?, ?, ?)";
 
@@ -47,6 +48,24 @@ module.exports.create = async function(email, password, first_name, last_name) {
         console.error(e);
     }
     return user;
+}
+
+module.exports.getAllMetrics = async function(userId) {
+    let sql = mysql.format(Q_SELECT_METRICS, [userId]);
+    console.log("Running SQL: " + sql);
+    
+    let metrics = [];
+    try {
+        const [rows, fields] = await promisePool.query(sql);
+        console.log("MySQL result:");
+        console.log(rows);
+        if (rows.length > 0) {
+            metrics = rows;
+        }
+    } catch (e) {
+        console.error(e);
+    }
+    return metrics;
 }
 
 function writeMetric(userId, type, metricName, metricValue) {

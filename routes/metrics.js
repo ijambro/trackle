@@ -12,10 +12,10 @@ const POOP = "poop";
 // Metric names
 const LEVEL = "level";
 
-// Show all cached events
-
-router.get("/", (req, res) => {
-    res.json(cache.getAll());
+// Show all recorded events for the logged-in user
+router.get("/", async (req, res) => {
+    let allMetrics = await mysql.getAllMetrics(req.session.userId);
+    res.json(allMetrics);
 });
 
 // Record a pain-level metric
