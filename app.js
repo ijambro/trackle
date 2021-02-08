@@ -156,6 +156,12 @@ app.get("/", verifyLoggedIn, (req, res) => {
 
 app.use("/metrics", verifyLoggedIn, metricsRoutes);
 
+app.get("/viewer", verifyLoggedIn, (req, res) => {
+    res.render("pages/viewer", {
+        userFirstName: req.session.userFirstName
+    });
+});
+
 // START THE SERVER
 app.listen(port, () => console.log("Express.js server is listening on port " + port));
 

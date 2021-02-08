@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <%- include("../partials/head"); %>
+        <link href="/css/footer.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+
+    <%- include("../partials/header", { selectedTab: "viewer" }); %>
+
+    <main class="container">
+
+        <p>Showing all your recorded events:</p>
+
+        <pre id="allmetrics">[ Loading... ]</pre>
+
+    </main>
+
+    <%- include("../partials/footer"); %>
+
+</body>
+
+<script type="text/javascript">
+
+document.addEventListener("DOMContentLoaded", async function() {
+    // From/To date and time pickers
+    let elems = document.querySelectorAll(".datepicker");
+    M.Datepicker.init(elems, { format: "yyyy-mm-dd" });
+
+    // Load all metrics and display in the allMetrics div
+    try {
+        const response = await fetch("/metrics");
+        if (response.ok) {
+            document.getElementById("allmetrics").innerText = await response.text();
+        }
+    } catch (error) {
+        console.log("Fetch error: ", error);
+    }
+});
+
+
+</script>
+
+</html>

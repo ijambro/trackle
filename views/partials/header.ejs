@@ -1,3 +1,13 @@
+<%  const ACTIVE = "active";
+    let isSelectedTabRecorder = "", isSelectedTabViewer = "";
+    if (selectedTab) {
+        switch(selectedTab) {
+            case "recorder": isSelectedTabRecorder = ACTIVE; break;
+            case "viewer": isSelectedTabViewer = ACTIVE; break;
+        }
+    }
+%>
+
 <header>
     <nav>
         <div class="nav-wrapper green accent-3">
@@ -7,16 +17,16 @@
             <a href="#" data-target="sidenav" class="sidenav-trigger"><i class="material-icons">menu</i></a>
 
             <ul id="nav-mobile" class="right hide-on-med-and-down">
-                <li class="active"><a href="/"><i class="material-icons right">edit</i>Recorder</a></li>
-                <li><a href="/metrics"><i class="material-icons right">insert_chart</i>Viewer</a></li>
+                <li class="<%- isSelectedTabRecorder %>"><a href="/"><i class="material-icons right">edit</i>Recorder</a></li>
+                <li class="<%- isSelectedTabViewer %>"><a href="/viewer"><i class="material-icons right">insert_chart</i>Viewer</a></li>
                 <li><a href="/logout"><i class="material-icons right">logout</i>Logout</a></li>
             </ul>
         </div>
     </nav>
 
     <ul id="sidenav" class="sidenav pink accent-2">
-        <li class="active"><a href="/" class="white-text"><i class="material-icons white-text left">edit</i>Recorder</a></li>
-        <li><a href="/metrics" class="white-text"><i class="material-icons white-text left">insert_chart</i>Viewer</a></li>
+        <li class="<%- isSelectedTabRecorder %>"><a href="/" class="white-text"><i class="material-icons white-text left">edit</i>Recorder</a></li>
+        <li class="<%- isSelectedTabViewer %>"><a href="/viewer" class="white-text"><i class="material-icons white-text left">insert_chart</i>Viewer</a></li>
         <li><a href="/logout" class="white-text"><i class="material-icons white-text left">logout</i>Logout</a></li>
     </ul>
 
