@@ -159,11 +159,17 @@ document.querySelectorAll("form").forEach(form => {
             method: "POST",
             body: JSON.stringify(formFieldsAsObject),
             headers: {"Content-Type": "application/json"}
+        })
+        .then(response => {
+            if (response.ok) {
+                M.toast({html: "Successfully recorded!  Great job, you!", classes: "rounded green accent-3"});
+            } else {
+                M.toast({html: "Failed to record!  Please try again later.  Contact support if the error persists.", classes: "rounded pink accent-2"});
+            }
+        })
+        .catch(error => {
+            M.toast({html: "Connection error. Please try again later.", classes: "rounded pink accent-2"});
         });
-        //then
-        M.toast({html: "Successfully recorded!  Great job, you!", classes: "rounded green accent-3"})
-        //catch
-        // M.toast({html: "Connection error. Please try again later.", classes: "rounded pink accent-2"})
 
         // Prevent the default form submit to stay on this page
         e.preventDefault();

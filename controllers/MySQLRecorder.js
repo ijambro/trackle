@@ -68,44 +68,85 @@ module.exports.getAllMetrics = async function(userId) {
     return metrics;
 }
 
+/**
+ * Record the single metric value in MySQL.
+ * Return true if successful, false otherwise.
+ * @param {*} userId 
+ * @param {*} type 
+ * @param {*} metricName 
+ * @param {*} metricValue 
+ */
 function writeMetric(userId, type, metricName, metricValue) {
     let metrics = {};
     metrics[metricName] = metricValue;
-    writeMetrics(userId, type, metrics);
+    return writeMetrics(userId, type, metrics);
 }
 
+/**
+ * Record the single metric value in MySQL with the specified time (converted to UTC).
+ * Return true if successful, false otherwise.
+ * @param {*} time 
+ * @param {*} userId 
+ * @param {*} type 
+ * @param {*} metricName 
+ * @param {*} metricValue 
+ */
 function writeMetricAtTime(time, userId, type, metricName, metricValue) {
     let metrics = {};
     metrics[metricName] = metricValue;
-    writeMetricsAtTime(time, userId, type, metrics);
+    return writeMetricsAtTime(time, userId, type, metrics);
 }
 
+/**
+ * Record the metric values in MySQL.
+ * Return true if successful, false otherwise.
+ * @param {*} userId 
+ * @param {*} type 
+ * @param {*} metrics 
+ */
 function writeMetrics(userId, type, metrics) {
     console.log("Writing " + type + " metrics to MySQL: " + JSON.stringify(metrics));
 
     let sql = mysql.format(Q_INSERT_METRIC, [userId, type, JSON.stringify(metrics)]);
-    console.log("Running SQL: " + sql);
-    
-    pool.query(sql, function(error, results, fields) {
-            console.log("MySQL Insert completed!");
-            if (error) return console.error(error);
-            
-            console.log("MySQL Success!");
-    });
+    return doInsert(sql);
 }
 
+/**
+ * Record the metric values in MySQL with the specified time (converted to UTC).
+ * Return true if successful, false otherwise.
+ * @param {*} time 
+ * @param {*} userId 
+ * @param {*} type 
+ * @param {*} metrics 
+ */
 function writeMetricsAtTime(time, userId, type, metrics) {
     console.log("Writing " + type + " metrics to MySQL: " + JSON.stringify(metrics) + " at time " + time);
 
     let sql = mysql.format(Q_INSERT_METRIC_AT_TIME, [time, userId, type, JSON.stringify(metrics)]);
-    console.log("Running SQL: " + sql);
-    
-    pool.query(sql, function(error, results, fields) {
-            console.log("MySQL Insert completed!");
-            if (error) return console.error(error);
-            
-            console.log("MySQL Success!");
-    });
+    return doInsert(sql);
+}
+
+/**
+ * Execute the insert, asynchronously.
+ * Return true if successfully inserted 1 row, false otherwise.
+ * @param {String} sql 
+ */
+async function doInsert(sql) {
+    console.log("Running SQL insert: " + sql);
+    let success = false;
+    try {
+        const [result, fields] = await promisePool.query(sql);
+        console.log("MySQL insert completed!  Result:");
+        console.log(result);
+        if (result.affectedRows === 1111111) {
+            console.log("MySQL successfully inserted 1 row!");
+            success = true;
+        }
+    } catch (e) {
+        console.error(e);
+        success = false;
+    }
+    return success;
 }
 
 module.exports.writeMetric = writeMetric;

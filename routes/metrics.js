@@ -19,10 +19,11 @@ router.get("/", async (req, res) => {
 });
 
 // Record a pain-level metric
-router.post("/pain", (req, res) => {
+router.post("/pain", async (req, res) => {
     console.log("Submitted event: pain");
 
     let value = req.body["level"];
+    let success = false;
 
     if (req.body["earlier"] && (req.body["earlier_date"] || req.body["earlier_time"])) {
         let ts = utils.convertDateTimeValuesToTimestamp(
@@ -30,21 +31,26 @@ router.post("/pain", (req, res) => {
             req.body["earlier_time"],
             req.session.userTimezoneOffset);
         console.log("Parsed timestamp: " + ts);
-        mysql.writeMetricAtTime(ts, req.session.userId, PAIN, LEVEL, value);
+        success = await mysql.writeMetricAtTime(ts, req.session.userId, PAIN, LEVEL, value);
     } else {
         // influx.writePoint(PAIN, LEVEL, value);
-        mysql.writeMetric(req.session.userId, PAIN, LEVEL, value);
+        success = await mysql.writeMetric(req.session.userId, PAIN, LEVEL, value);
         // cache.writeMetric(PAIN, LEVEL, value);
     }
 
-    res.sendStatus(200);
+    if (success === true) {
+        res.sendStatus(200);
+    } else {
+        res.sendStatus(500);
+    }
 });
 
 // Record a gas-level metric
-router.post("/gas", (req, res) => {
+router.post("/gas", async (req, res) => {
     console.log("Submitted event: gas");
 
     let value = req.body["level"];
+    let success = false;
 
     if (req.body["earlier"] && (req.body["earlier_date"] || req.body["earlier_time"])) {
         let ts = utils.convertDateTimeValuesToTimestamp(
@@ -52,19 +58,25 @@ router.post("/gas", (req, res) => {
             req.body["earlier_time"],
             req.session.userTimezoneOffset);
         console.log("Parsed timestamp: " + ts);
-        mysql.writeMetricAtTime(ts, req.session.userId, GAS, LEVEL, value);
+        success = await mysql.writeMetricAtTime(ts, req.session.userId, GAS, LEVEL, value);
     } else {
         // influx.writePoint(GAS, LEVEL, value);
-        mysql.writeMetric(req.session.userId, GAS, LEVEL, value);
+        success = await mysql.writeMetric(req.session.userId, GAS, LEVEL, value);
         // cache.writeMetric(GAS, LEVEL, value);
     }
 
-    res.sendStatus(200);
+    if (success === true) {
+        res.sendStatus(200);
+    } else {
+        res.sendStatus(500);
+    }
 });
 
 // Record poop metrics
-router.post("/poop", (req, res) => {
+router.post("/poop", async (req, res) => {
     console.log("Submitted event: poop");
+
+    let success = false;
 
     let poopMetrics = {
         duration: Number(req.body["duration"]),
@@ -92,14 +104,18 @@ router.post("/poop", (req, res) => {
             req.body["earlier_time"],
             req.session.userTimezoneOffset);
         console.log("Parsed timestamp: " + ts);
-        mysql.writeMetricsAtTime(ts, req.session.userId, POOP, poopMetrics);
+        success = await mysql.writeMetricsAtTime(ts, req.session.userId, POOP, poopMetrics);
     } else {
         // influx.writePoint(POOP, LEVEL, poopLevel);
-        mysql.writeMetrics(req.session.userId, POOP, poopMetrics);
+        success = await mysql.writeMetrics(req.session.userId, POOP, poopMetrics);
         // cache.writeMetrics(POOP, poopMetrics);
     }
 
-    res.sendStatus(200);
+    if (success === true) {
+        res.sendStatus(200);
+    } else {
+        res.sendStatus(500);
+    }
 });
 
 module.exports = router;
