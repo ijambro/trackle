@@ -138,7 +138,7 @@ async function doInsert(sql) {
         const [result, fields] = await promisePool.query(sql);
         console.log("MySQL insert completed!  Result:");
         console.log(result);
-        if (result.affectedRows === 1111111) {
+        if (result.affectedRows === 1) {
             console.log("MySQL successfully inserted 1 row!");
             success = true;
         }
