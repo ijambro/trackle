@@ -16,7 +16,11 @@
     <main class="container">
         <br>
         <!-- <p>Your tracked values:</p> -->
-        <div id="toast-chart"></div>
+        <div id="symptoms-chart"></div>
+        <br>
+        <div id="meds-chart"></div>
+        <br>
+        <div id="foods-chart"></div>
 
         <p>Showing all your recorded events:</p>
 
@@ -48,7 +52,9 @@ document.addEventListener("DOMContentLoaded", async function() {
             document.getElementById("allmetrics").innerText = JSON.stringify(allMetrics, null, 2); //await response.text();
 
             // Initialize the Toast-UI chart
-            initLineChart(allMetrics);
+            initSymptomsLineChart(allMetrics);
+            initMedsLineChart(allMetrics);
+            initFoodsLineChart(allMetrics);
         }
     } catch (error) {
         console.log("Fetch error: ", error);
@@ -57,8 +63,8 @@ document.addEventListener("DOMContentLoaded", async function() {
 
 
 
-function initLineChart(allMetrics) {
-    const el = document.getElementById("toast-chart");
+function initSymptomsLineChart(allMetrics) {
+    const el = document.getElementById("symptoms-chart");
 
     const data = {
         series: []
@@ -125,9 +131,82 @@ function initLineChart(allMetrics) {
     console.log(data);
 
     const options = {
-        chart: { title: "Your tracked values:", width: 800, height: 500 },
+        chart: { title: "Your tracked symptoms:", width: 600, height: 400 },
         xAxis: { pointOnColumn: true, title: 'Time', date: { format: 'MM/dd hh:mm' }, },
         yAxis: { title: 'Level' },
+        series: { eventDetectType: 'point', zoomable: true }
+    };
+
+    const chart = toastui.Chart.lineChart({ el, data, options });
+}
+
+function initMedsLineChart(allMetrics) {
+    const el = document.getElementById("meds-chart");
+
+    const data = {
+        series: []
+    };
+
+    let medData = {
+        name: 'Meds',
+        data: []
+    };
+    let vaxData = {
+        name: 'Vaccines',
+        data: []
+    };
+    let infusionData = {
+        name: 'Infusions',
+        data: []
+    };
+
+    data.series.push(medData);
+    data.series.push(vaxData);
+    data.series.push(infusionData);
+
+    const options = {
+        chart: { title: "Your tracked medicines (coming soon):", width: 600, height: 400 },
+        xAxis: { pointOnColumn: true, title: 'Time', date: { format: 'MM/dd hh:mm' }, },
+        yAxis: { title: 'Doses' },
+        series: { eventDetectType: 'point', zoomable: true }
+    };
+
+    const chart = toastui.Chart.lineChart({ el, data, options });
+}
+
+function initFoodsLineChart(allMetrics) {
+    const el = document.getElementById("foods-chart");
+
+    const data = {
+        series: []
+    };
+
+    let foodData = {
+        name: 'Food',
+        data: []
+    };
+    let waterData = {
+        name: 'Water',
+        data: []
+    };
+    let alcoholData = {
+        name: 'Alcohol',
+        data: []
+    };
+    let caffeineData = {
+        name: 'Caffeine',
+        data: []
+    };
+
+    data.series.push(foodData);
+    data.series.push(waterData);
+    data.series.push(alcoholData);
+    data.series.push(caffeineData);
+
+    const options = {
+        chart: { title: "Your tracked food & beverage (coming soon):", width: 600, height: 400 },
+        xAxis: { pointOnColumn: true, title: 'Time', date: { format: 'MM/dd hh:mm' }, },
+        yAxis: { title: 'Amount' },
         series: { eventDetectType: 'point', zoomable: true }
     };
 
