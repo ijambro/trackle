@@ -30,6 +30,8 @@
 
 <script type="text/javascript">
 
+const BASELINE_TEMPERATURE = 95;
+
 document.addEventListener("DOMContentLoaded", async function() {
     // From/To date and time pickers
     // let elems = document.querySelectorAll(".datepicker");
@@ -74,6 +76,14 @@ function initLineChart(allMetrics) {
         name: 'Poop',
         data: []
     };
+    let stressData = {
+        name: 'Stress',
+        data: []
+    };
+    let tempData = {
+        name: 'Temperature',
+        data: []
+    };
 
     for (let i=0; i < allMetrics.length; i++) {
         let m = allMetrics[i];
@@ -92,12 +102,24 @@ function initLineChart(allMetrics) {
                 m.time,
                 calculatePoopLevelFromMetrics(m.metrics)
             ]);
+        } else if (m.type === "stress") {
+            stressData.data.push([
+                m.time,
+                m.metrics.level
+            ]);
+        } else if (m.type === "temp") {
+            tempData.data.push([
+                m.time,
+                m.metrics.level - BASELINE_TEMPERATURE
+            ]);
         }
     }
 
     data.series.push(painData);
     data.series.push(gasData);
     data.series.push(poopData);
+    data.series.push(stressData);
+    data.series.push(tempData);
 
     console.log("Computed data from metrics:");
     console.log(data);
@@ -106,7 +128,7 @@ function initLineChart(allMetrics) {
         chart: { title: "Your tracked values:", width: 800, height: 500 },
         xAxis: { pointOnColumn: true, title: 'Time', date: { format: 'MM/dd hh:mm' }, },
         yAxis: { title: 'Level' },
-        series: { eventDetectType: 'point' }
+        series: { eventDetectType: 'point', zoomable: true }
     };
 
     const chart = toastui.Chart.lineChart({ el, data, options });

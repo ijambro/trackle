@@ -115,6 +115,44 @@
                     </form>
                 </div>
             </li>
+            <li>
+                <div class="collapsible-header"><i class="material-icons pink-text text-accent-2">psychology</i>Stress</div>
+                <div class="collapsible-body">
+
+                    <form action="/metrics/stress">
+                        <div class="row">
+                            How much stress do you feel?
+                        </div>
+                
+                        <div class="row">
+                            <p class="range-field">
+                                <input type="range" name="level" min="0" max="10" />
+                            </p>
+                        </div>
+
+                        <%- include("../partials/submit", { suffix: "stress" }); %>
+                    </form>
+                </div>
+            </li>
+            <li>
+                <div class="collapsible-header"><i class="material-icons pink-text text-accent-2">thermostat</i>Temperature</div>
+                <div class="collapsible-body">
+
+                    <form action="/metrics/temp">
+                        <div class="row">
+                            Body temperature:
+                        </div>
+                
+                        <div class="row">
+                            <p class="range-field">
+                                <input type="range" name="level" min="95" max="105" />
+                            </p>
+                        </div>
+
+                        <%- include("../partials/submit", { suffix: "temp" }); %>
+                    </form>
+                </div>
+            </li>
         </ul>
 
     </main>

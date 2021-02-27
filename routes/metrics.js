@@ -9,6 +9,8 @@ const mysql = require("../controllers/MySQLRecorder");
 const PAIN = "pain";
 const GAS = "gas";
 const POOP = "poop";
+const STRESS = "stress";
+const TEMP = "temp";
 // Metric names
 const LEVEL = "level";
 
@@ -109,6 +111,56 @@ router.post("/poop", async (req, res) => {
         // influx.writePoint(POOP, LEVEL, poopLevel);
         success = await mysql.writeMetrics(req.session.userId, POOP, poopMetrics);
         // cache.writeMetrics(POOP, poopMetrics);
+    }
+
+    if (success === true) {
+        res.sendStatus(200);
+    } else {
+        res.sendStatus(500);
+    }
+});
+
+// Record a stress-level metric
+router.post("/stress", async (req, res) => {
+    console.log("Submitted event: stress");
+
+    let value = req.body["level"];
+    let success = false;
+
+    if (req.body["earlier"] && (req.body["earlier_date"] || req.body["earlier_time"])) {
+        let ts = utils.convertDateTimeValuesToTimestamp(
+            req.body["earlier_date"], 
+            req.body["earlier_time"],
+            req.session.userTimezoneOffset);
+        console.log("Parsed timestamp: " + ts);
+        success = await mysql.writeMetricAtTime(ts, req.session.userId, STRESS, LEVEL, value);
+    } else {
+        success = await mysql.writeMetric(req.session.userId, STRESS, LEVEL, value);
+    }
+
+    if (success === true) {
+        res.sendStatus(200);
+    } else {
+        res.sendStatus(500);
+    }
+});
+
+// Record a temperature-level metric
+router.post("/temp", async (req, res) => {
+    console.log("Submitted event: temperature");
+
+    let value = req.body["level"];
+    let success = false;
+
+    if (req.body["earlier"] && (req.body["earlier_date"] || req.body["earlier_time"])) {
+        let ts = utils.convertDateTimeValuesToTimestamp(
+            req.body["earlier_date"], 
+            req.body["earlier_time"],
+            req.session.userTimezoneOffset);
+        console.log("Parsed timestamp: " + ts);
+        success = await mysql.writeMetricAtTime(ts, req.session.userId, TEMP, LEVEL, value);
+    } else {
+        success = await mysql.writeMetric(req.session.userId, TEMP, LEVEL, value);
     }
 
     if (success === true) {
