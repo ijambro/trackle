@@ -11,6 +11,10 @@ const GAS = "gas";
 const POOP = "poop";
 const STRESS = "stress";
 const TEMP = "temp";
+const FOOD = "food";
+const WATER = "water";
+const ALCOHOL = "alcohol";
+const CAFFEINE = "caffeine";
 // Metric names
 const LEVEL = "level";
 
@@ -20,58 +24,17 @@ router.get("/", async (req, res) => {
     res.json(allMetrics);
 });
 
+////////////////////////////////////
+//  Symptoms
+
 // Record a pain-level metric
 router.post("/pain", async (req, res) => {
-    console.log("Submitted event: pain");
-
-    let value = req.body["level"];
-    let success = false;
-
-    if (req.body["earlier"] && (req.body["earlier_date"] || req.body["earlier_time"])) {
-        let ts = utils.convertDateTimeValuesToTimestamp(
-            req.body["earlier_date"], 
-            req.body["earlier_time"],
-            req.session.userTimezoneOffset);
-        console.log("Parsed timestamp: " + ts);
-        success = await mysql.writeMetricAtTime(ts, req.session.userId, PAIN, LEVEL, value);
-    } else {
-        // influx.writePoint(PAIN, LEVEL, value);
-        success = await mysql.writeMetric(req.session.userId, PAIN, LEVEL, value);
-        // cache.writeMetric(PAIN, LEVEL, value);
-    }
-
-    if (success === true) {
-        res.sendStatus(200);
-    } else {
-        res.sendStatus(500);
-    }
+    reportLevelMetric(req, res, PAIN);
 });
 
 // Record a gas-level metric
 router.post("/gas", async (req, res) => {
-    console.log("Submitted event: gas");
-
-    let value = req.body["level"];
-    let success = false;
-
-    if (req.body["earlier"] && (req.body["earlier_date"] || req.body["earlier_time"])) {
-        let ts = utils.convertDateTimeValuesToTimestamp(
-            req.body["earlier_date"], 
-            req.body["earlier_time"],
-            req.session.userTimezoneOffset);
-        console.log("Parsed timestamp: " + ts);
-        success = await mysql.writeMetricAtTime(ts, req.session.userId, GAS, LEVEL, value);
-    } else {
-        // influx.writePoint(GAS, LEVEL, value);
-        success = await mysql.writeMetric(req.session.userId, GAS, LEVEL, value);
-        // cache.writeMetric(GAS, LEVEL, value);
-    }
-
-    if (success === true) {
-        res.sendStatus(200);
-    } else {
-        res.sendStatus(500);
-    }
+    reportLevelMetric(req, res, GAS);
 });
 
 // Record poop metrics
@@ -121,33 +84,40 @@ router.post("/poop", async (req, res) => {
 });
 
 // Record a stress-level metric
-router.post("/stress", async (req, res) => {
-    console.log("Submitted event: stress");
-
-    let value = req.body["level"];
-    let success = false;
-
-    if (req.body["earlier"] && (req.body["earlier_date"] || req.body["earlier_time"])) {
-        let ts = utils.convertDateTimeValuesToTimestamp(
-            req.body["earlier_date"], 
-            req.body["earlier_time"],
-            req.session.userTimezoneOffset);
-        console.log("Parsed timestamp: " + ts);
-        success = await mysql.writeMetricAtTime(ts, req.session.userId, STRESS, LEVEL, value);
-    } else {
-        success = await mysql.writeMetric(req.session.userId, STRESS, LEVEL, value);
-    }
-
-    if (success === true) {
-        res.sendStatus(200);
-    } else {
-        res.sendStatus(500);
-    }
+router.post("/stress", (req, res) => {
+    reportLevelMetric(req, res, STRESS);
 });
 
 // Record a temperature-level metric
-router.post("/temp", async (req, res) => {
-    console.log("Submitted event: temperature");
+router.post("/temp", (req, res) => {
+    reportLevelMetric(req, res, TEMP);
+});
+
+////////////////////////////////////
+//  Food & Beverage
+
+// Record a temperature-level metric
+router.post("/food", (req, res) => {
+    reportLevelMetric(req, res, FOOD);
+});
+
+// Record a water-level metric
+router.post("/water", (req, res) => {
+    reportLevelMetric(req, res, WATER);
+});
+
+// Record a alcohol-level metric
+router.post("/alcohol", (req, res) => {
+    reportLevelMetric(req, res, ALCOHOL);
+});
+
+// Record a caffeine-level metric
+router.post("/caffeine", (req, res) => {
+    reportLevelMetric(req, res, CAFFEINE);
+});
+
+async function reportLevelMetric(req, res, metricType) {
+    console.log("Submitted event: " + metricType);
 
     let value = req.body["level"];
     let success = false;
@@ -158,9 +128,9 @@ router.post("/temp", async (req, res) => {
             req.body["earlier_time"],
             req.session.userTimezoneOffset);
         console.log("Parsed timestamp: " + ts);
-        success = await mysql.writeMetricAtTime(ts, req.session.userId, TEMP, LEVEL, value);
+        success = await mysql.writeMetricAtTime(ts, req.session.userId, metricType, LEVEL, value);
     } else {
-        success = await mysql.writeMetric(req.session.userId, TEMP, LEVEL, value);
+        success = await mysql.writeMetric(req.session.userId, metricType, LEVEL, value);
     }
 
     if (success === true) {
@@ -168,6 +138,6 @@ router.post("/temp", async (req, res) => {
     } else {
         res.sendStatus(500);
     }
-});
+}
 
 module.exports = router;

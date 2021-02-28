@@ -35,6 +35,7 @@
 <script type="text/javascript">
 
 const BASELINE_TEMPERATURE = 95;
+const FOOD_UNIT_SCALE = 50;
 
 document.addEventListener("DOMContentLoaded", async function() {
     // From/To date and time pickers
@@ -131,9 +132,10 @@ function initSymptomsLineChart(allMetrics) {
     console.log(data);
 
     const options = {
-        chart: { title: "Your tracked symptoms:", width: 600, height: 400 },
+        chart: { title: "Symptoms:", width: 600, height: 400 },
         xAxis: { pointOnColumn: true, title: 'Time', date: { format: 'MM/dd hh:mm' }, },
         yAxis: { title: 'Level' },
+        legend: { align: 'bottom' },
         series: { eventDetectType: 'point', zoomable: true }
     };
 
@@ -165,9 +167,10 @@ function initMedsLineChart(allMetrics) {
     data.series.push(infusionData);
 
     const options = {
-        chart: { title: "Your tracked medicines (coming soon):", width: 600, height: 400 },
+        chart: { title: "Medicines (coming soon):", width: 600, height: 400 },
         xAxis: { pointOnColumn: true, title: 'Time', date: { format: 'MM/dd hh:mm' }, },
         yAxis: { title: 'Doses' },
+        legend: { align: 'bottom' },
         series: { eventDetectType: 'point', zoomable: true }
     };
 
@@ -198,15 +201,41 @@ function initFoodsLineChart(allMetrics) {
         data: []
     };
 
+    for (let i=0; i < allMetrics.length; i++) {
+        let m = allMetrics[i];
+        if (m.type === "food") {
+            foodData.data.push([
+                m.time,
+                m.metrics.level / FOOD_UNIT_SCALE
+            ]);
+        } else if (m.type === "water") {
+            waterData.data.push([
+                m.time,
+                m.metrics.level
+            ]);
+        } else if (m.type === "alcohol") {
+            alcoholData.data.push([
+                m.time,
+                m.metrics.level
+            ]);
+        } else if (m.type === "caffeine") {
+            caffeineData.data.push([
+                m.time,
+                m.metrics.level
+            ]);
+        }
+    }
+
     data.series.push(foodData);
     data.series.push(waterData);
     data.series.push(alcoholData);
     data.series.push(caffeineData);
 
     const options = {
-        chart: { title: "Your tracked food & beverage (coming soon):", width: 600, height: 400 },
+        chart: { title: "Food & Beverage:", width: 600, height: 400 },
         xAxis: { pointOnColumn: true, title: 'Time', date: { format: 'MM/dd hh:mm' }, },
         yAxis: { title: 'Amount' },
+        legend: { align: 'bottom' },
         series: { eventDetectType: 'point', zoomable: true }
     };
 
