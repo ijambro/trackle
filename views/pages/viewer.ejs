@@ -19,10 +19,10 @@
         <!-- <p>Your tracked values:</p> -->
         <div id="symptoms-chart"></div>
         <br>
-        <div id="meds-chart"></div>
-        <br>
         <div id="foods-chart"></div>
-
+        <br>
+        <div id="meds-chart"></div>
+        
         <p>Showing all your recorded events:</p>
 
         <pre id="allmetrics">[ Loading... ]</pre>
@@ -35,9 +35,9 @@
 
 <script type="text/javascript">
 
-const MAX_CHART_WIDTH = 700;
+const MAX_CHART_WIDTH = 900;
 const CHART_WIDTH = (window.innerWidth > MAX_CHART_WIDTH) ? MAX_CHART_WIDTH : window.innerWidth;
-const CHART_HEIGHT = 400;
+const CHART_HEIGHT = 500;
 console.log("Using chart dimensions: " + CHART_WIDTH + " x " + CHART_HEIGHT);
 
 const BASELINE_TEMPERATURE = 95;
@@ -61,7 +61,7 @@ document.addEventListener("DOMContentLoaded", async function() {
             // Initialize the Toast-UI chart
             initSymptomsLineChart(allMetrics);
             initMedsLineChart(allMetrics);
-            initFoodsLineChart(allMetrics);
+            initLineScatterChart(allMetrics);
         }
     } catch (error) {
         console.log("Fetch error: ", error);
@@ -128,11 +128,11 @@ function initSymptomsLineChart(allMetrics) {
         }
     }
 
-    data.series.push(painData);
-    data.series.push(gasData);
-    data.series.push(poopData);
-    data.series.push(stressData);
-    data.series.push(tempData);
+    if (painData.data.length > 0) data.series.push(painData);
+    if (gasData.data.length > 0) data.series.push(gasData);
+    if (poopData.data.length > 0) data.series.push(poopData);
+    if (stressData.data.length > 0) data.series.push(stressData);
+    if (tempData.data.length > 0) data.series.push(tempData);
 
     console.log("Computed data from metrics:");
     console.log(data);
@@ -246,6 +246,131 @@ function initFoodsLineChart(allMetrics) {
     };
 
     const chart = toastui.Chart.lineChart({ el, data, options });
+}
+
+function initLineScatterChart(allMetrics) {
+    const el = document.getElementById("foods-chart");
+
+    const data = {
+        series: {
+            line: [],
+            scatter: []
+        }
+    };
+
+    let painData = {
+        name: 'Pain',
+        data: []
+    };
+    let gasData = {
+        name: 'Gas',
+        data: []
+    };
+    let poopData = {
+        name: 'Poop',
+        data: []
+    };
+    let stressData = {
+        name: 'Stress',
+        data: []
+    };
+    let tempData = {
+        name: 'Temperature',
+        data: []
+    };
+
+    for (let i=0; i < allMetrics.length; i++) {
+        let m = allMetrics[i];
+        if (m.type === "pain") {
+            painData.data.push([
+                m.time,
+                m.metrics.level
+            ]);
+        } else if (m.type === "gas") {
+            gasData.data.push([
+                m.time,
+                m.metrics.level
+            ]);
+        } else if (m.type === "poop") {
+            poopData.data.push([
+                m.time,
+                calculatePoopLevelFromMetrics(m.metrics)
+            ]);
+        } else if (m.type === "stress") {
+            stressData.data.push([
+                m.time,
+                m.metrics.level
+            ]);
+        } else if (m.type === "temp") {
+            tempData.data.push([
+                m.time,
+                m.metrics.level - BASELINE_TEMPERATURE
+            ]);
+        }
+    }
+
+    if (painData.data.length > 0) data.series.line.push(painData);
+    if (gasData.data.length > 0) data.series.line.push(gasData);
+    if (poopData.data.length > 0) data.series.line.push(poopData);
+    if (stressData.data.length > 0) data.series.line.push(stressData);
+    if (tempData.data.length > 0) data.series.line.push(tempData);
+
+    let foodData = {
+        name: 'Food',
+        data: []
+    };
+    let waterData = {
+        name: 'Water',
+        data: []
+    };
+    let alcoholData = {
+        name: 'Alcohol',
+        data: []
+    };
+    let caffeineData = {
+        name: 'Caffeine',
+        data: []
+    };
+
+    for (let i=0; i < allMetrics.length; i++) {
+        let m = allMetrics[i];
+        if (m.type === "food") {
+            foodData.data.push([
+                m.time,
+                m.metrics.level / FOOD_UNIT_SCALE
+            ]);
+        } else if (m.type === "water") {
+            waterData.data.push([
+                m.time,
+                m.metrics.level
+            ]);
+        } else if (m.type === "alcohol") {
+            alcoholData.data.push([
+                m.time,
+                m.metrics.level
+            ]);
+        } else if (m.type === "caffeine") {
+            caffeineData.data.push([
+                m.time,
+                m.metrics.level
+            ]);
+        }
+    }
+
+    if (foodData.data.length > 0) data.series.scatter.push(foodData);
+    if (waterData.data.length > 0) data.series.scatter.push(waterData);
+    if (alcoholData.data.length > 0) data.series.scatter.push(alcoholData);
+    if (caffeineData.data.length > 0) data.series.scatter.push(caffeineData);
+
+    const options = {
+        chart: { title: "Symptoms with Food & Beverage:", width: CHART_WIDTH, height: CHART_HEIGHT },
+        xAxis: { pointOnColumn: true, title: 'Time', date: { format: 'MM/dd hh:mm' }, },
+        yAxis: { title: 'Level/Amount' },
+        legend: { align: 'bottom' },
+        series: { eventDetectType: 'point', zoomable: true }
+    };
+
+    const chart = toastui.Chart.lineScatterChart({ el, data, options });
 }
 
 function calculatePoopLevelFromMetrics(metrics) {
