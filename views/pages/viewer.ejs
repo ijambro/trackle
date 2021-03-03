@@ -3,6 +3,7 @@
 
 <head>
     <%- include("../partials/head"); %>
+    <link href="/css/viewer.css" rel="stylesheet" type="text/css">
     <link href="/css/footer.css" rel="stylesheet" type="text/css">
 
     <link rel="stylesheet" href="https://uicdn.toast.com/chart/latest/toastui-chart.min.css" />
@@ -13,7 +14,7 @@
 
     <%- include("../partials/header", { selectedTab: "viewer" }); %>
 
-    <main class="container">
+    <main>
         <br>
         <!-- <p>Your tracked values:</p> -->
         <div id="symptoms-chart"></div>
@@ -33,6 +34,11 @@
 </body>
 
 <script type="text/javascript">
+
+const MAX_CHART_WIDTH = 700;
+const CHART_WIDTH = (window.innerWidth > MAX_CHART_WIDTH) ? MAX_CHART_WIDTH : window.innerWidth;
+const CHART_HEIGHT = 400;
+console.log("Using chart dimensions: " + CHART_WIDTH + " x " + CHART_HEIGHT);
 
 const BASELINE_TEMPERATURE = 95;
 const FOOD_UNIT_SCALE = 50;
@@ -132,7 +138,7 @@ function initSymptomsLineChart(allMetrics) {
     console.log(data);
 
     const options = {
-        chart: { title: "Symptoms:", width: 600, height: 400 },
+        chart: { title: "Symptoms:", width: CHART_WIDTH, height: CHART_HEIGHT },
         xAxis: { pointOnColumn: true, title: 'Time', date: { format: 'MM/dd hh:mm' }, },
         yAxis: { title: 'Level' },
         legend: { align: 'bottom' },
@@ -167,7 +173,7 @@ function initMedsLineChart(allMetrics) {
     data.series.push(infusionData);
 
     const options = {
-        chart: { title: "Medicines (coming soon):", width: 600, height: 400 },
+        chart: { title: "Medicines (coming soon):", width: CHART_WIDTH, height: CHART_HEIGHT },
         xAxis: { pointOnColumn: true, title: 'Time', date: { format: 'MM/dd hh:mm' }, },
         yAxis: { title: 'Doses' },
         legend: { align: 'bottom' },
@@ -232,7 +238,7 @@ function initFoodsLineChart(allMetrics) {
     data.series.push(caffeineData);
 
     const options = {
-        chart: { title: "Food & Beverage:", width: 600, height: 400 },
+        chart: { title: "Food & Beverage:", width: CHART_WIDTH, height: CHART_HEIGHT },
         xAxis: { pointOnColumn: true, title: 'Time', date: { format: 'MM/dd hh:mm' }, },
         yAxis: { title: 'Amount' },
         legend: { align: 'bottom' },
