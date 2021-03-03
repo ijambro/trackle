@@ -357,6 +357,9 @@ document.querySelectorAll("form").forEach(form => {
         .then(response => {
             if (response.ok) {
                 M.toast({html: "Successfully recorded!  Great job, you!", classes: "rounded green accent-3"});
+            } else if (response.status == 401) {
+                console.error("Unauthorized!");
+                location = "/login?required=true";
             } else {
                 M.toast({html: "Failed to record!  Please try again later.  Contact support if the error persists.", classes: "rounded pink accent-2"});
             }

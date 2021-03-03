@@ -60,7 +60,7 @@ function verifyLoggedIn(req, res, next) {
     // Else, redirect to the login page
     else {
         console.log("User is not logged in.  Redirecting to login page.")
-        res.render("pages/login", {
+        res.status(401).render("pages/login", {
             error_message: NO_LOGIN
         });
         return;
@@ -70,7 +70,13 @@ function verifyLoggedIn(req, res, next) {
 // WEB ROUTES (unauthenticated)
 
 app.get("/login", (req, res) => {
-    res.render("pages/login");
+    if (req.query["required"] == "true") {
+        res.status(401).render("pages/login", {
+            error_message: NO_LOGIN
+        });
+    } else {
+        res.render("pages/login");
+    }
 });
 
 app.get("/logout", (req, res) => {
@@ -91,6 +97,7 @@ app.post("/login", async (req, res) => {
     console.log(user);
 
     if (user && user.email === req.body["email"]) {
+        console.log("Authenticated " + req.body["email"]);
         req.session.isLoggedIn = true;
         req.session.userId = user.id;
         req.session.userEmail = user.email;
@@ -98,6 +105,7 @@ app.post("/login", async (req, res) => {
         req.session.userLastName = user.last_name;
         req.session.userTimezoneOffset = req.body["tzOffset"];
 
+        console.log("Redirecting to home page");
         res.redirect("/");
     } else {
         res.render("pages/login", {
